@@ -6,21 +6,24 @@ import pandas as pd
 import sys
 from datetime import date
 from datetime import timedelta
+import math
 
 today = date.today()
 yesterday = today - timedelta(days = 1)
 # dd/mm/YY
-d1 = yesterday.strftime("%d/%m/%Y")
+d0 = today.strftime("%d-%m-%Y")
+d1 = yesterday.strftime("%d-%m-%Y")
 
 
 urlMW = "https://app.metricwire.com/"
 
 path_button = "#root > div > main > div > div > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-12.MuiGrid-grid-md-8 > div > div.MuiCardContent-root > table > tbody > tr:nth-child(1) > td:nth-child(3) > a"
 
-email_MW = ''
-pass_MW = ''
-
-date_records = pd.read_csv('stored_vals.csv', index_col = 0)
+try:
+    date_records = pd.read_csv('stored_vals.csv', index_col = 0)
+except pd.errors.EmptyDataError:
+    date_records = pd.DataFrame()
+pgconst = 4
 
 def loginMetricWire(my_email, my_passw, OS = 'Mac'):
     '''
@@ -74,11 +77,11 @@ def openStudy(study_path, driver, pgconst):
 
     time.sleep(7)
 
-    expand_btn = driver.find_element_by_xpath("/html/body/div[1]/div/main/div/div/div/div/div[2]/div/div/div/table/tfoot/tr/td/div/div[2]/div")
-    expand_btn.click()
+    #expand_btn = driver.find_element_by_xpath("/html/body/div[1]/div/main/div/div/div/div/div[2]/div/div/div/table/tfoot/tr/td/div/div[2]/div")
+    #expand_btn.click()
 
-    sel300 = driver.find_element_by_xpath("/html/body/div[" + str(pgconst) + "]/div[3]/ul/li[3]")
-    sel300.click()
+    #sel300 = driver.find_element_by_xpath("/html/body/div[" + str(pgconst) + "]/div[3]/ul/li[3]")
+    #sel300.click()
 
     sort_btn = driver.find_element_by_css_selector("#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > thead > tr > th:nth-child(10) > span > div")
     sort_btn.click()
@@ -97,22 +100,27 @@ def get_emails(date, driver):
         time.sleep(2)
         table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody')
 #iterate through participants
+#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(2) > td:nth-child(12)
     isDate = False
     participant_email = []
     participant_subm = []
     for row in table.find_elements_by_css_selector('tr'):
         try:
             row_num = row.get_attribute("index")
+            row_num = int(row_num) + 2
+            print('ROWNUM: ' + str(row_num))
             try:
-                last_submit = '#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss437 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(12)'
+                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
                 enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
             except:
                 time.sleep(3)
                 enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
-                last_submit = '#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss437 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(12)'
+                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
+                print(enroll_date.text)
+                print(last_submit.text)
             print(enroll_date.text)
             print(last_submit.text)
-            if enroll_date.text[:10] != d1:
+            if (enroll_date.text[:10] != d0) and ('2020' in enroll_date.text):
                 isDate = True
                 email_ob = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(5)')
                 email = email_ob.text.split('@')[0]
@@ -122,38 +130,45 @@ def get_emails(date, driver):
                     participant_subm.append(1)
                 else:
                     participant_subm.append(0)
-          else:
-                if isDate == True:
-                    break
+            else:
+                    if isDate == True:
+                        break
         except:
             pass
-    return(participant_email, participant_subm)
+    return participant_email, participant_subm
     
 def update_df(part_ls, subm_ls):
     for i in range(len(part_ls)):
+        print(i)
+        print(part_ls)
         date_records.loc[part_ls[i], d1] = subm_ls[i]
+    date_records.to_csv('stored_vals.csv')
     return
         
 def assign_text(d1):
     texts_today = pd.DataFrame()
-    for i in (len(date_records[d1]) -1):
-        index = date_records.iloc[i]
-        val = date_records.loc[index, d1]
-        current_row = date_records.loc[index]
-        streaks = (current_row.groupby((current_row != current_row.shift()).cumsum()).cumcount() + 1)
-        curr_val_streak =streaks[len(streaks) - 1]
-        if val == 0:
-            if curr_val_streak >= 3:
-                texts_today[index, d1] = 'Hey, this is PPOL! You have missed surveys for ' + str(curr_val_streak) + ' days. Please contact us at ppolpitt@pitt.edu if you are having technical issues.'
-            else:
-                texts_today[index, d1] = None
-        elif val == 1:
-            texts_today[index, d1] = 'You answered surveys yesterday!  You are on a ' + str(curr_val_streak) + ' day streak!'
+    for i in range(len(date_records[d1])):
+        index = date_records.index.values[i]
+        if math.isnan(date_records.loc[index, d1]) == False:
+            val = int(date_records.loc[index, d1])
+            current_row = date_records.loc[index]
+            print(current_row)
+            streaks = (current_row.groupby((current_row != current_row.shift()).cumsum()).cumcount() + 1)
+            curr_val_streak =streaks[len(streaks) - 1]
+            if val == 0:
+                if curr_val_streak >= 1:
+                    texts_today.loc[index, d1] = 'Hey, this is PPOL! You have missed surveys for ' + str(curr_val_streak) + ' days. Please contact us at ppolpitt@pitt.edu if you are having technical issues.'
+                else:
+                    texts_today.loc[index, d1] = None
+            elif val == 1:
+                texts_today.loc[index, d1] = 'You answered surveys yesterday!  You are on a ' + str(curr_val_streak) + ' day streak!'
+        else:
+            print('Participant ' + str(index) + ' not yet enrolled.')
     return texts_today
         
     
         
-def full_email_path(email, passw, date, pgconst, cutoff, OS = 'MAC', study_path = path_button):
+def full_email_path(email, passw, pgconst, OS = 'MAC', study_path = path_button):
     '''
     INPUT: study_path, date of enrollment
     
@@ -162,9 +177,15 @@ def full_email_path(email, passw, date, pgconst, cutoff, OS = 'MAC', study_path 
     Runs everything above in sequence
     '''
     driver = loginMetricWire(email, passw, OS = OS)
+    print('LOGGED IN')
     driver =openStudy(study_path, driver, pgconst)
+    print('STUDY OPENED')
     participant_email, participant_subm = get_emails(date, driver)
+    print('GOT EMAILS + SUBM')
     update_df(participant_email, participant_subm)
+    print('DF UPDATED')
     texts_today = assign_text(d1)
+    print('TEXTS CREATED')
+    print(texts_today)
     
     return texts_today
