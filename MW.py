@@ -25,6 +25,15 @@ try:
     date_records = pd.read_csv('stored_vals.csv', index_col = 0)
 except pd.errors.EmptyDataError:
     date_records = pd.DataFrame()
+
+if d1 in date_records.columns:
+    delete = input("You are about to delete the column for " + d1 + ".  If this is what you want type TRUE")
+    if delete == "TRUE":
+        date_records = date_records.drop(d1, axis = 1)
+        print("DELETED")
+    else:
+        print("NOT DELETED")
+    
 pgconst = 4
 
 def loginMetricWire(my_email, my_passw, OS = 'Mac'):
@@ -137,8 +146,9 @@ def get_emails(date, driver):
                 email = email_ob.text.split('@')[0]
                 print(email)
                 participant_email.append(email)
-                if last_submit == d1:
+                if last_submit.text[:10] == d1 or last_submit.text[:10] == d2:
                     participant_subm.append(1)
+                    print(email + 'has participated within the last 24 hours')
                 else:
                     participant_subm.append(0)
             else:

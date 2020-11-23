@@ -50,29 +50,32 @@ def send_texts(driver, phone2text, d1, OS = 'WINDOWS'):
         send_new_msg.click()
         
     for i in phone2text.index:
-        print(phone2text.loc[i]['phone'])
-        phone_numbers = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[1]/gv-recipient-picker/div/md-content/gv-recipient-picker-chips-ng2/mat-chip-list/div/md-input-container/input')
-        phone_numbers.click()
-        time.sleep(1)
-        phone_numbers.send_keys(str(int(phone2text.loc[i]['phone'])))
-        time.sleep(3)
-        
-        phone_numbers.send_keys(Keys.RETURN)
-
         try:
-            text_msg = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[2]/gv-message-entry/div/div[2]/md-input-container/textarea')
-            text_msg.click()
-        except:
+            print(phone2text.loc[i]['phone'])
+            phone_numbers = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[1]/gv-recipient-picker/div/md-content/gv-recipient-picker-chips-ng2/mat-chip-list/div/md-input-container/input')
+            phone_numbers.click()
+            time.sleep(1)
+            phone_numbers.send_keys(str(int(phone2text.loc[i]['phone'])))
             time.sleep(3)
-            text_msg = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[2]/gv-message-entry/div/div[2]/md-input-container/textarea')
-            text_msg.click()
-        time.sleep(1)
-        text_msg.send_keys(phone2text.loc[i][d1])
-        
-        #send_btn = '#ib25 > span.mat-button-wrapper > mat-icon > svg'
-        text_msg.send_keys(Keys.RETURN)
-        time.sleep(2)
-        send_new_msg.click()
+            
+            phone_numbers.send_keys(Keys.RETURN)
+
+            try:
+                text_msg = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[2]/gv-message-entry/div/div[2]/md-input-container/textarea')
+                text_msg.click()
+            except:
+                time.sleep(3)
+                text_msg = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[2]/gv-message-entry/div/div[2]/md-input-container/textarea')
+                text_msg.click()
+            time.sleep(1)
+            text_msg.send_keys(phone2text.loc[i][d1])
+            
+
+            text_msg.send_keys(Keys.RETURN)
+            time.sleep(2)
+            send_new_msg.click()
+        else:
+            print("NUMBER MISSING")
         
         
     
