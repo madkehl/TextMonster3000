@@ -38,13 +38,17 @@ def hack_openVoice(OS = 'MAC'):
     
     return(driver)
     
-def send_texts(driver, phone2text):
+def send_texts(driver, phone2text, d1):
     messages_btn = driver.find_element_by_css_selector('#gvPageRoot > div.gv_root.layout-column.flex > div.layout-row.flex > gv-side-nav > div > div > gmat-nav-list > a:nth-child(2) > div > div > mat-icon > svg')
     messages_btn.click()
-    
-    send_new_msg = driver.find_element_by_css_selector('#messaging-view > div > md-content > div > div > div > div.GYQtq-mpvPNd.flex-none > mat-icon > svg')
-    send_new_msg.click()
-    
+    try:
+        send_new_msg = driver.find_element_by_css_selector('#messaging-view > div > md-content > div > div > div > div.GYQtq-mpvPNd.flex-none > mat-icon > svg')
+        send_new_msg.click()
+    except:
+        time.sleep(4)
+        send_new_msg = driver.find_element_by_css_selector('#messaging-view > div > md-content > div > div > div > div.GYQtq-mpvPNd.flex-none > mat-icon > svg')
+        send_new_msg.click()
+        
     for i in phone2text.index:
         print(phone2text.loc[i]['phone'])
         phone_numbers = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[1]/gv-recipient-picker/div/md-content/gv-recipient-picker-chips-ng2/mat-chip-list/div/md-input-container/input')
@@ -54,7 +58,7 @@ def send_texts(driver, phone2text):
         text_msg = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/gv-messaging-view/div/div/md-content/gv-thread-details/div/div[2]/gv-message-entry/div/div[2]/md-input-container/textarea')
         text_msg.click()
         time.sleep(1)
-        text_msg.send_keys(phone2text.loc[i]['text'])
+        text_msg.send_keys(phone2text.loc[i][d1])
         
         send_btn = '#ib25 > span.mat-button-wrapper > mat-icon > svg'
         send_btn.click()
@@ -105,10 +109,10 @@ def openGVoice(my_email, my_passw, OS = 'MAC'):
 
     return(driver)
     
-def full_text_path(phone2text):
+def full_text_path(phone2text, d1):
 
     driver = hack_openVoice(OS = 'MAC')
-    send_texts(driver, phone2text)
+    send_texts(driver, phone2text, d1)
     time.sleep(30)
     return
 

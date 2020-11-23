@@ -10,9 +10,11 @@ import math
 
 today = date.today()
 yesterday = today - timedelta(days = 1)
+anteayer = today - timedelta(days = 2)
 # dd/mm/YY
-d0 = today.strftime("%d-%m-%Y")
+d2 = today.strftime("%d-%m-%Y")
 d1 = yesterday.strftime("%d-%m-%Y")
+d0 = anteayer.strftime("%d-%m-%Y")
 
 
 urlMW = "https://app.metricwire.com/"
@@ -75,17 +77,20 @@ def openStudy(study_path, driver, pgconst):
     part_btn = driver.find_element_by_css_selector("#root > div > main > div > div > header > div > div > div > div > div > button:nth-child(6)")
     part_btn.click()
 
-    time.sleep(7)
+    time.sleep(4)
 
     #expand_btn = driver.find_element_by_xpath("/html/body/div[1]/div/main/div/div/div/div/div[2]/div/div/div/table/tfoot/tr/td/div/div[2]/div")
     #expand_btn.click()
 
     #sel300 = driver.find_element_by_xpath("/html/body/div[" + str(pgconst) + "]/div[3]/ul/li[3]")
     #sel300.click()
-
-    sort_btn = driver.find_element_by_css_selector("#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > thead > tr > th:nth-child(10) > span > div")
-    sort_btn.click()
-
+    try:
+        sort_btn = driver.find_element_by_css_selector("#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > thead > tr > th:nth-child(10) > span > div")
+        sort_btn.click()
+    except:
+        sort_btn = driver.find_element_by_css_selector("#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss96 > div > div > div > table > tbody > tr:nth-child(1) > td:nth-child(10) > div > div > div > span")
+        sort_btn.click()
+        pass
     return(driver)
 
 def get_emails(date, driver):
@@ -95,12 +100,18 @@ def get_emails(date, driver):
     OUTPUT: result list of email and number of submissions
     '''
     try:
-        table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody')
+        page = 'jss97'
+        table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody')
+
     except:
-        time.sleep(2)
-        table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody')
+        try:
+            time.sleep(2)
+            table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody')
+        except:
+            page = 'jss96'
+            table = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody')
+
 #iterate through participants
-#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(2) > td:nth-child(12)
     isDate = False
     participant_email = []
     participant_subm = []
@@ -110,19 +121,19 @@ def get_emails(date, driver):
             row_num = int(row_num) + 2
             print('ROWNUM: ' + str(row_num))
             try:
-                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
-                enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
+                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page +' > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
+                enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page +' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
             except:
                 time.sleep(3)
-                enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
-                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
+                enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
+                last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
                 print(enroll_date.text)
                 print(last_submit.text)
             print(enroll_date.text)
             print(last_submit.text)
-            if (enroll_date.text[:10] != d0) and ('2020' in enroll_date.text):
+            if (enroll_date.text[:10] != d0) and (enroll_date.text[:10] != d2) and ('2020' in enroll_date.text):
                 isDate = True
-                email_ob = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.jss97 > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(5)')
+                email_ob = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page +' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(5)')
                 email = email_ob.text.split('@')[0]
                 print(email)
                 participant_email.append(email)
@@ -188,4 +199,4 @@ def full_email_path(email, passw, pgconst, OS = 'MAC', study_path = path_button)
     print('TEXTS CREATED')
     print(texts_today)
     
-    return texts_today
+    return texts_today, d1
