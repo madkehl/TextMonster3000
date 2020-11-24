@@ -74,7 +74,7 @@ def send_texts(driver, phone2text, d1, OS = 'WINDOWS'):
             text_msg.send_keys(Keys.RETURN)
             time.sleep(2)
             send_new_msg.click()
-        else:
+        except:
             print("NUMBER MISSING")
         
         

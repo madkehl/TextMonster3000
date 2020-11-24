@@ -140,7 +140,7 @@ def get_emails(date, driver):
                 print(last_submit.text)
             print(enroll_date.text)
             print(last_submit.text)
-            if (enroll_date.text[:10] != d0) and (enroll_date.text[:10] != d2) and ('2020' in enroll_date.text):
+            if (enroll_date.text[:10] != d2) and (enroll_date.text[:10] != d1) and ('2020' in enroll_date.text):
                 isDate = True
                 email_ob = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page +' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(5)')
                 email = email_ob.text.split('@')[0]
