@@ -136,8 +136,6 @@ def get_emails(date, driver):
                 time.sleep(3)
                 enroll_date = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(10)')
                 last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
-                print(enroll_date.text)
-                print(last_submit.text)
             print(enroll_date.text)
             print(last_submit.text)
             if (enroll_date.text[:10] != d2) and (enroll_date.text[:10] != d1) and ('2020' in enroll_date.text):
@@ -151,9 +149,9 @@ def get_emails(date, driver):
                     print(email + 'has participated within the last 24 hours')
                 else:
                     participant_subm.append(0)
-            else:
-                    if isDate == True:
-                        break
+            #else:
+                 #   if isDate == True:
+                   #     break
         except:
             pass
     return participant_email, participant_subm
