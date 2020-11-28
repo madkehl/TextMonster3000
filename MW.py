@@ -21,19 +21,23 @@ urlMW = "https://app.metricwire.com/"
 
 path_button = "#root > div > main > div > div > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.MuiGrid-grid-sm-12.MuiGrid-grid-md-8 > div > div.MuiCardContent-root > table > tbody > tr:nth-child(1) > td:nth-child(3) > a"
 
+#attempts to import stored values, if it doesn't exist, creates it
 try:
     date_records = pd.read_csv('stored_vals.csv', index_col = 0)
 except pd.errors.EmptyDataError:
     date_records = pd.DataFrame()
 
+#if column exists, gives option to delete, this is for testing purposes
 if d1 in date_records.columns:
-    delete = input("You are about to delete the column for " + d1 + ".  If this is what you want type TRUE")
+    delete = input("You are about to delete the column for " + d1 + ".  If this is what you want type TRUE: ")
     if delete == "TRUE":
         date_records = date_records.drop(d1, axis = 1)
         print("DELETED")
     else:
         print("NOT DELETED")
-    
+
+#pgconst exists because sometimes the way the page loads shifts
+
 pgconst = 4
 
 def loginMetricWire(my_email, my_passw, OS = 'Mac'):
@@ -102,6 +106,7 @@ def openStudy(study_path, driver, pgconst):
         pass
     return(driver)
 
+#whether it is jss97 or 96 depends on the chromedriver version
 def get_emails(date, driver):
     '''
     INPUT: date of enrollment that you are interested in grabbing
@@ -138,7 +143,7 @@ def get_emails(date, driver):
                 last_submit = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page + ' > div > div > div > table > tbody > tr:nth-child('+ str(row_num) + ') > td:nth-child(12)')
             print(enroll_date.text)
             print(last_submit.text)
-            if (enroll_date.text[:10] != d2) and (enroll_date.text[:10] != d1) and ('2020' in enroll_date.text):
+            if (enroll_date.text[:10] != d2) and ('2020' in enroll_date.text):
                 isDate = True
                 email_ob = driver.find_element_by_css_selector('#root > div > main > div > div > div > div > div.MuiPaper-root.MuiCard-root.MuiPaper-elevation1.MuiPaper-rounded > div > div > div > div.'+ page +' > div > div > div > table > tbody > tr:nth-child(' + str(row_num) + ') > td:nth-child(5)')
                 email = email_ob.text.split('@')[0]

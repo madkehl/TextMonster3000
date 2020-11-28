@@ -45,7 +45,7 @@ def send_texts(driver, phone2text, d1, OS = 'WINDOWS'):
         send_new_msg = driver.find_element_by_css_selector('#messaging-view > div > md-content > div > div > div > div.GYQtq-mpvPNd.flex-none > mat-icon > svg')
         send_new_msg.click()
     except:
-        time.sleep(4)
+        time.sleep(7)
         send_new_msg = driver.find_element_by_css_selector('#messaging-view > div > md-content > div > div > div > div.GYQtq-mpvPNd.flex-none > mat-icon > svg')
         send_new_msg.click()
         
